@@ -77,13 +77,18 @@ function App() {
     setDepartureList(subSet)
   }
 
-  useEffect(() => {
-    const intervalRef = setInterval(() => {
-      const originId = getQueryParam('originId');
+  const getData = () => {
+    const originId = getQueryParam('originId');
 
-      getDepartures(originId).then((resp) => {
-        getDeparturesList(resp)
-      })
+    getDepartures(originId).then((resp) => {
+      getDeparturesList(resp)
+    })
+  }
+
+  useEffect(() => {
+    getData()
+    const intervalRef = setInterval(() => {
+      getData()
     }, PULL_DATA_INTERVAL)
     return () => {
       clearInterval(intervalRef)

@@ -3,12 +3,21 @@ import './App.css';
 import { getDepartures } from './services/sl'
 import beep from './beep'
 
-const STOP_AREA_NAME = 'AGA'
-const DESTINATION = 'Ropsten'
+const MINUTES_TO_MS = 60 * 1000
+
+
+const getQueryParam = (key: string) : string => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(key) || '';
+}
+const TRANSPORT_TYPE = getQueryParam('transportType')
+const DIRECTION = ~~getQueryParam('direction')
+
 const PULL_DATA_INTERVAL = 5000
-const MIN_TIME_BEFORE_LEAVING = 6 * 60 * 1000
-const WARNING_TIME_GAP = 8 * 60 * 1000
-const ONLY_RUN_TIME_GAP = 3 * 60 * 1000
+
+const WARNING_TIME_GAP = (~~getQueryParam('warning') || 8) * MINUTES_TO_MS
+const MIN_TIME_BEFORE_LEAVING = (~~getQueryParam('run') || 6) * MINUTES_TO_MS
+const ONLY_RUN_TIME_GAP = (~~getQueryParam('noWay') || 3) * MINUTES_TO_MS
 
 // ZERO -- ONLY_RUN_TIME_GAP -- MIN_TIME_BEFORE_LEAVING -- WARNING_TIME_GAP -- GREEN
 interface SLDepartureType {
@@ -17,14 +26,18 @@ interface SLDepartureType {
   time: {
     displayTime: string,
     expectedDateTime: string
+  },
+  transport: {
+    direction: number,
+    transportType: string
   }
 }
 
-const getNotificationStatus = (departures: Array<SLDepartureType>) => {
+const getNotificationStatus = (departures: SLDepartureType[]) => {
   const status = departures.map((departure) => {
     return getTimeToLeaveStatus(departure)
   })
-  console.log(status)
+
   if (status.includes('warning')) {
     beep(250, 0.5);
     beep(1000, 0.2);
@@ -49,16 +62,27 @@ const getTimeToLeaveStatus = (departure : SLDepartureType) : string => {
 }
 
 function App() {
-  const [remainingTime, setRemainingTime] = useState([])
+  const [departureList, setDepartureList] = useState<SLDepartureType[]>([])
   const [activated, setActivated] = useState(false)
+  const [stopName, setStopName] = useState('')
+  const [towardsName, setTowardsName] = useState('')
+
+  const getDeparturesList = (data : SLDepartureType[]) => {
+    const subSet : SLDepartureType[] = data.filter((item : SLDepartureType) => {
+      return (
+        item.transport.direction === DIRECTION &&
+        item.transport.transportType === TRANSPORT_TYPE
+      )
+    })
+    setDepartureList(subSet)
+  }
 
   useEffect(() => {
     const intervalRef = setInterval(() => {
-      getDepartures().then((resp) => {
-        const subSet = resp.filter((item : SLDepartureType) => {
-          return item.stopAreaName === STOP_AREA_NAME && item.destination === DESTINATION
-        })
-        setRemainingTime(subSet)
+      const originId = getQueryParam('originId');
+
+      getDepartures(originId).then((resp) => {
+        getDeparturesList(resp)
       })
     }, PULL_DATA_INTERVAL)
     return () => {
@@ -68,15 +92,20 @@ function App() {
 
   useEffect(() => {
     if (activated) {
-      getNotificationStatus(remainingTime)
+      getNotificationStatus(departureList)
     }
-  }, [remainingTime, activated])
+    const [firstDeparture] = departureList
+    if (firstDeparture) {
+      setTowardsName(firstDeparture.destination)
+      setStopName(firstDeparture.stopAreaName)
+    }
+  }, [departureList, activated])
 
   return (
     <div className="App">
       <header className="App-header">
         <h3>
-            {`From "${STOP_AREA_NAME}" towards "${DESTINATION}"`}
+            {`From "${stopName}" towards "${towardsName}"`}
         </h3>
         <div>
           <label className="switch">
@@ -85,7 +114,7 @@ function App() {
           </label>
         </div>
         <p>
-          {remainingTime.map((departure: SLDepartureType, index: number) => {
+          {departureList.map((departure: SLDepartureType, index: number) => {
             return (
               <span style={{ margin: '4px' }} className={`departure-${index} ${getTimeToLeaveStatus(departure)}`}>
                 {departure.time.displayTime}

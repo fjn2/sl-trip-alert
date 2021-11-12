@@ -49,9 +49,12 @@
 }
 
 .run-now {
-  color: red;
+  color: orange;
 }
 
+.imposible-to-get {
+  color: red;
+}
 
 .switch {
   position: relative;

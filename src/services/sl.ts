@@ -1,5 +1,5 @@
 export const getDepartures = (originId: string) => {
-    return fetch('/api/sl', {
+    return fetch(`/api/sl?originSiteId=${originId}`, {
     'headers': {
       'accept': '*/*',
       'accept-language': 'en-US',

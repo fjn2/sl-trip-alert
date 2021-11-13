@@ -41,6 +41,20 @@
   font-size: 3rem;
 }
 
+.departure-time {
+  position: relative;
+}
+.departure-time::after {
+  position: absolute;
+  font-size: 0.7rem;
+  content: attr(data-custom-attribute);
+  color: white;
+  width: 330px;
+  text-align: left;
+  bottom: 0;
+  margin: 4px;
+}
+
 .good {
   color: green;
 }

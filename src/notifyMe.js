@@ -7,7 +7,14 @@ function notifyMe(text) {
   // Let's check if the user is okay to get some notification
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
-    var notification = new Notification(text);
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      navigator.serviceWorker.getRegistration("/worker/").then(reg => {
+        console.log("About to show notification", reg);
+        reg.showNotification(text);
+      });
+    } else {
+      var notification = new Notification(text);
+    }
   }
 
   // Otherwise, we need to ask the user for permission
@@ -23,7 +30,14 @@ function notifyMe(text) {
 
       // If the user is okay, let's create a notification
       if (permission === "granted") {
-        var notification = new Notification(text);
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+          navigator.serviceWorker.getRegistration("/worker/").then(reg => {
+            console.log("About to show notification", reg);
+            reg.showNotification(text);
+          });
+        } else {
+          var notification = new Notification(text);
+        }
       }
     });
   } else {

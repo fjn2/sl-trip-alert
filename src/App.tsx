@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { getDepartures } from './services/sl'
 import beep from './beep'
+import notifyMe  from './notifyMe'
 
 const MINUTES_TO_MS = 60 * 1000
+
+const NOTIFICATION_MESSAGE = 'It is time to leave, you have to take the SL!'
 
 
 const getQueryParam = (key: string) : string => {
@@ -33,18 +36,22 @@ interface SLDepartureType {
   }
 }
 
-const getNotificationStatus = (departures: SLDepartureType[]) => {
-  const status = departures.map((departure) => {
-    return getTimeToLeaveStatus(departure)
-  })
-
-  if (status.includes('warning')) {
+const performNotificationActions = () => {
+  notifyMe(NOTIFICATION_MESSAGE)
+  return setInterval(() => {
     beep(250, 0.2);
     beep(300, 0.2);
     beep(400, 0.2);
     beep(500, 0.2);
     beep(600, 0.2);
-  }
+  }, 5000)
+}
+
+const getNotificationStatus = (departures: SLDepartureType[]) => {
+  const status = departures.map((departure) => {
+    return getTimeToLeaveStatus(departure)
+  })
+  return status.includes('warning')
 }
 
 const getTimeToLeaveStatus = (departure : SLDepartureType) : string => {
@@ -67,6 +74,7 @@ function App() {
   const [departureList, setDepartureList] = useState<SLDepartureType[]>([])
   const [error, setError] = useState('')
   const [activated, setActivated] = useState(false)
+  const [notificationActivated, setNotificationActivated] = useState(false)
 
   const getDeparturesList = (data : SLDepartureType[]) => {
     const subSet : SLDepartureType[] = data.filter((item : SLDepartureType) => {
@@ -101,10 +109,20 @@ function App() {
 
   useEffect(() => {
     if (activated) {
-      getNotificationStatus(departureList)
+      const shouldActivate = getNotificationStatus(departureList)
+      setNotificationActivated(shouldActivate)
     }
   }, [departureList, activated])
 
+  useEffect(() => {
+    let notificationIntervalRef : any
+    if (notificationActivated) {
+      notificationIntervalRef = performNotificationActions()
+    }
+    return () => {
+      clearInterval(notificationIntervalRef)
+    }
+  }, [notificationActivated])
   return (
     <div className="App">
       <header className="App-header">

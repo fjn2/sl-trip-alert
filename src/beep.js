@@ -29,8 +29,6 @@ function beep (frequency, durationSec, ramp=false)
 
     stopTime += durationSec;
     oscillatorNode.stop (stopTime);
-
-    oscillatorNode = null
 }
 
 export default beep

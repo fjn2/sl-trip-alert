@@ -39,9 +39,11 @@ const getNotificationStatus = (departures: SLDepartureType[]) => {
   })
 
   if (status.includes('warning')) {
-    beep(250, 0.5);
-    beep(1000, 0.2);
-    beep(550, 0.5);
+    beep(250, 0.2);
+    beep(300, 0.2);
+    beep(400, 0.2);
+    beep(500, 0.2);
+    beep(600, 0.2);
   }
 }
 

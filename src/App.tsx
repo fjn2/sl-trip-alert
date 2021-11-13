@@ -65,8 +65,6 @@ function App() {
   const [departureList, setDepartureList] = useState<SLDepartureType[]>([])
   const [error, setError] = useState('')
   const [activated, setActivated] = useState(false)
-  const [stopName, setStopName] = useState('')
-  const [towardsName, setTowardsName] = useState('')
 
   const getDeparturesList = (data : SLDepartureType[]) => {
     const subSet : SLDepartureType[] = data.filter((item : SLDepartureType) => {
@@ -103,11 +101,6 @@ function App() {
     if (activated) {
       getNotificationStatus(departureList)
     }
-    const [firstDeparture] = departureList
-    if (firstDeparture) {
-      setTowardsName(firstDeparture.destination)
-      setStopName(firstDeparture.stopAreaName)
-    }
   }, [departureList, activated])
 
   return (
@@ -119,16 +112,16 @@ function App() {
             <span className="slider round"></span>
           </label>
         </div>
-        <h3 style={{ marginBottom: 0 }}>
-            {`From "${stopName}" towards "${towardsName}"`}
-        </h3>
         <p style={{margin: 0}}>
           {departureList.map((departure: SLDepartureType, index: number) => {
             return (
               <div style={{ margin: '4px' }}>
-                <span className={`departure-time departure-${index} ${getTimeToLeaveStatus(departure)}`} data-custom-attribute={index ? `From "${departure.stopAreaName}" towards "${departure.destination}"` : ''}>
+                <div className={`departure-time departure-${index} ${getTimeToLeaveStatus(departure)}`}>
                   {departure.time.displayTime}
-                </span>
+                </div>
+                <div style={{fontSize: index ? '0.7rem' : '1.2rem'}}>
+                  {`From "${departure.stopAreaName}" towards "${departure.destination}"`}
+                </div>
               </div>
             )
           })}

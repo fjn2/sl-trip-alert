@@ -18,7 +18,7 @@ if ('serviceWorker' in navigator) {
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }, function(err) {
       // registration failed :(
-      console.log('ServiceWorker registration failed: ', err);
+      alert('ServiceWorker registration failed: ' + err.message);
     });
   });
 }

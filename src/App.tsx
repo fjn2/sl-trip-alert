@@ -111,6 +111,8 @@ function App() {
     if (activated) {
       const shouldActivate = getNotificationStatus(departureList)
       setNotificationActivated(shouldActivate)
+    } else {
+      setNotificationActivated(false)
     }
   }, [departureList, activated])
 

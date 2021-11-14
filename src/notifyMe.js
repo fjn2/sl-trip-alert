@@ -1,3 +1,21 @@
+const getServiceWorkerRegistration = () => {
+  // register service worker for the notifications
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    return registrations[0] // return the first registration
+  }).catch(function(err) {
+    console.log('Service Worker registration failed: ', err);
+  });
+}
+
+const showNotificationWithServiceWorker = (text) => {
+  const registration = getServiceWorkerRegistration()
+  if(registration) {
+    registration.showNotification(text)
+  } else {
+    alert('The registration of the SW was not found')
+  }
+}
+
 function notifyMe(text) {
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
@@ -8,10 +26,7 @@ function notifyMe(text) {
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
     if (window.matchMedia('(display-mode: standalone)').matches) {
-      navigator.serviceWorker.getRegistration("/worker/").then(reg => {
-        console.log("About to show notification", reg);
-        reg.showNotification(text);
-      });
+      showNotificationWithServiceWorker(text)
     } else {
       var notification = new Notification(text);
     }
@@ -31,10 +46,7 @@ function notifyMe(text) {
       // If the user is okay, let's create a notification
       if (permission === "granted") {
         if (window.matchMedia('(display-mode: standalone)').matches) {
-          navigator.serviceWorker.getRegistration("/worker/").then(reg => {
-            console.log("About to show notification", reg);
-            reg.showNotification(text);
-          });
+          showNotificationWithServiceWorker(text)
         } else {
           var notification = new Notification(text);
         }

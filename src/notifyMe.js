@@ -1,10 +1,11 @@
 const getServiceWorkerRegistration = () => {
   // register service worker for the notifications
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    return registrations[0] // return the first registration
-  }).catch(function(err) {
-    console.log('Service Worker registration failed: ', err);
-  });
+  // navigator.serviceWorker.getRegistrations().then(function(registrations) {
+  //   return registrations[0] // return the first registration
+  // }).catch(function(err) {
+  //   console.log('Service Worker registration failed: ', err);
+  // });
+  return window.swRegistration
 }
 
 const showNotificationWithServiceWorker = (text) => {

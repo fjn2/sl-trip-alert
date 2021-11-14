@@ -14,6 +14,8 @@ ReactDOM.render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // @ts-ignore
+      window.swRegistration = registration
       // Registration was successful
       alert('ServiceWorker registration successful with scope: ' + registration.scope);
     }, function(err) {

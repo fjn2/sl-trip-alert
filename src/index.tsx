@@ -17,7 +17,7 @@ if ('serviceWorker' in navigator) {
       // @ts-ignore
       window.swRegistration = registration
       // Registration was successful
-      alert('ServiceWorker registration successful with scope: ' + registration.scope);
+      console.log('ServiceWorker registration successful with scope: ' + registration.scope);
     }, function(err) {
       // registration failed :(
       alert('ServiceWorker registration failed: ' + err.message);

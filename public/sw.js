@@ -1,7 +1,14 @@
+const NOTIFICATION_MESSAGE = 'It is time to leave, you have to take the SL!'
+
 self.addEventListener('install', function(event) {
   // Perform install steps
   console.log('Service worker console log')
 });
+
+self.addEventListener('push', function(event) {
+  console.log('push event recived', event)
+  self.registration.showNotification(NOTIFICATION_MESSAGE);
+})
 
 
 

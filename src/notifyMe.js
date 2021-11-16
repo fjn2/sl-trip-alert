@@ -1,7 +1,9 @@
 function notifyMe(text) {
   const registration = window.swRegistration
   if(registration) {
-    registration.showNotification(text)
+    if (Notification.permission === "granted") {
+      registration.showNotification(text)
+    }
   } else {
     alert('The registration of the SW was not found')
   }

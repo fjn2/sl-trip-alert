@@ -1,4 +1,7 @@
+require('dotenv').config()
+require('dotenv').config()
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const bodyParser = require('body-parser')
 
 const HOST = 'https://webcloud.sl.se'
 
@@ -12,4 +15,78 @@ module.exports = function(app) {
       });
     }
   );
+
+  app.get('/send', (req, res) => {
+    console.log('get /send')
+    const webpush = require('web-push');
+
+    // VAPID keys should be generated only once.
+    // const vapidKeys = webpush.generateVAPIDKeys();
+
+    webpush.setGCMAPIKey(process.env.GCM_API_KEY);
+    webpush.setVapidDetails(
+      'mailto:' + process.env.CONTACT_EMAIL,
+      process.env.VAPID_APP_SERVER_KEY_PUBLIC,
+      process.env.VAPID_APP_SERVER_KEY_PRIVATE
+    );
+
+
+    Object.keys(db).map((id) => {
+      // This is the same output of calling JSON.stringify on a PushSubscription
+      const pushSubscription = db[id]
+      webpush.sendNotification(pushSubscription, '');
+    })
+    res.send('Sending the response to ', Object.keys(db).length, 'clients')
+  })
+
+  const db = {}
+  let dbId = 0
+
+  const isValidSaveRequest = (req, res) => {
+    // TODO implement this validation
+    return true
+  }
+  const saveSubscriptionToDatabase = (data) => {
+    dbId ++;
+    db[dbId] = data
+    console.log('New record', dbId)
+    return Promise.resolve(dbId)
+  }
+  const getByEndpointName = (endpoint) => {
+    return Object.keys(db).find((key) => {
+      const item = db[key]
+      return item.endpoint === endpoint
+    })
+  }
+  app.use('/api/save-subscription/', bodyParser.json())
+  app.post('/api/save-subscription/', function (req, res) {
+    if (!isValidSaveRequest(req, res)) {
+      return;
+    }
+    const item = getByEndpointName(req.body.endpoint)
+    if (item) {
+      // TODO check for expiration date
+      res.send(JSON.stringify({
+        data: {
+          success: true,
+          message: 'The client was already stored'
+        }
+      }));
+    }
+    return saveSubscriptionToDatabase(req.body)
+    .then(function(subscriptionId) {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ data: { success: true, id: subscriptionId } }));
+    })
+    .catch(function(err) {
+      res.status(500);
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({
+        error: {
+          id: 'unable-to-save-subscription',
+          message: 'The subscription was received but we were unable to save it to our database.'
+        }
+      }));
+    });
+  });
 };

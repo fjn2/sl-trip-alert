@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
-import './firebase'
+import urlBase64ToUint8Array from './urlBase64ToUint8Array'
+import sendSubscriptionToBackend from './sendSubscriptionToBackend'
+// import './firebase'
 
 ReactDOM.render(
   <React.StrictMode>
@@ -13,11 +14,30 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-if ('serviceWorker' in navigator) {
+
+if (!('serviceWorker' in navigator)) {
+  alert('Service Worker isn\'t supported on this browser, disable or hide UI.')
+}
+
+if (!('PushManager' in window)) {
+  alert('Push isn\'t supported on this browser, disable or hide UI.')
+}
+if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/sw.js').then(function(registration) {
       // @ts-ignore
       window.swRegistration = registration
+      registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          'BPQ31iS_wnpweqM4eAu2BtoYuphbyNXA8here-MlI5RiFCdAt9E6gVhaCtngo_zuAP-xBB2T0C5dO5iBTpbNCbc' // PUBLIC KEY
+        )
+      }).then(function(pushSubscription) {
+        console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+        // Send subscription to server
+        sendSubscriptionToBackend(pushSubscription)
+        return pushSubscription;
+      });
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ' + registration.scope);
     }, function(err) {

@@ -3,6 +3,7 @@ import './App.css';
 import { getDepartures } from './services/sl'
 import beep from './beep'
 import notifyMe  from './notifyMe'
+import askPermission from './askPermissions'
 
 const MINUTES_TO_MS = 60 * 1000
 
@@ -130,14 +131,14 @@ function App() {
       <header className="App-header">
         <div>
           <label className="switch">
-            <input type="checkbox" onClick={() => setActivated(!activated)} checked={activated} />
+            <input type="checkbox" onClick={() => {setActivated(!activated); !activated && askPermission()}} checked={activated} onChange={() => {}} />
             <span className="slider round"></span>
           </label>
         </div>
-        <p style={{margin: 0}}>
+        <div style={{margin: 0}}>
           {departureList.map((departure: SLDepartureType, index: number) => {
             return (
-              <div style={{ margin: '4px' }}>
+              <div style={{ margin: '4px' }} key={JSON.stringify(departure)}>
                 <div className={`departure-time departure-${index} ${getTimeToLeaveStatus(departure)}`}>
                   {departure.time.displayTime}
                 </div>
@@ -147,7 +148,7 @@ function App() {
               </div>
             )
           })}
-        </p>
+        </div>
         <div className="imposible-to-get">
           {error}
         </div>

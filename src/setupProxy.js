@@ -36,7 +36,7 @@ module.exports = function(app) {
       const pushSubscription = db[id]
       webpush.sendNotification(pushSubscription, '');
     })
-    res.send('Sending the response to ', Object.keys(db).length, 'clients')
+    res.send('Sending the response to ' + Object.keys(db).length + ' clients')
   })
 
   const db = {}
@@ -79,6 +79,7 @@ module.exports = function(app) {
       res.send(JSON.stringify({ data: { success: true, id: subscriptionId } }));
     })
     .catch(function(err) {
+      console.log('Error: ', err.message)
       res.status(500);
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({

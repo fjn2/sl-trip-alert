@@ -92,6 +92,7 @@ module.exports = function(app) {
           message: 'The client was already stored'
         }
       }));
+      return
     }
     return saveSubscriptionToDatabase(req.body)
     .then(function(subscriptionId) {

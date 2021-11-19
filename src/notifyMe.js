@@ -10,6 +10,11 @@ function notifyMe(text) {
 }
 
 function notifyMeSafari(text) {
+
+  const options = {
+    body: 'message',
+    imageUrl: '/sl-icon.png',
+  }
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
     alert("This browser does not support desktop notification");
@@ -18,7 +23,7 @@ function notifyMeSafari(text) {
   // Let's check if the user is okay to get some notification
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
-    var notification = new Notification(text);
+    var notification = new Notification(text, options);
   }
 
   // Otherwise, we need to ask the user for permission
@@ -34,7 +39,7 @@ function notifyMeSafari(text) {
 
       // If the user is okay, let's create a notification
       if (permission === "granted") {
-        var notification = new Notification(text);
+        var notification = new Notification(text, options);
       }
     });
   } else {

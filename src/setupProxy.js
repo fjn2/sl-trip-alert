@@ -54,7 +54,7 @@ module.exports = function(app) {
 
     // This is the same output of calling JSON.stringify on a PushSubscription
     const pushSubscription = item
-    webpush.sendNotification(pushSubscription, '');
+    webpush.sendNotification(pushSubscription, req.query.message);
 
     res.send('Sending the response to ' + Object.keys(db).length + ' clients')
   })

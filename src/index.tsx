@@ -27,6 +27,21 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
     navigator.serviceWorker.register('/sw.js').then(function(registration) {
       // @ts-ignore
       window.swRegistration = registration
+
+      let serviceWorker;
+      if (registration.installing) {
+        serviceWorker = registration.installing;
+      } else if (registration.waiting) {
+        serviceWorker = registration.waiting;
+      } else if (registration.active) {
+        serviceWorker = registration.active;
+      }
+
+      // @ts-ignore
+      serviceWorker.addEventListener('statechange', function(e) {
+        console.log('statechange', e)
+      })
+
       setTimeout(() => {
         registration.pushManager.subscribe({
           userVisibleOnly: true,

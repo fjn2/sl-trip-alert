@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import { getDepartures } from './services/sl'
-import beep from './beep'
+import beep from './helpers/beep'
 import notifyMe  from './notifyMe'
-import askPermission from './askPermissions'
+import askPermission from './helpers/askPermissions'
 
 const MINUTES_TO_MS = 60 * 1000
 

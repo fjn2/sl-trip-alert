@@ -1,5 +1,7 @@
+const HOST = process.env.REACT_APP_BACKEND_URL
+
 function sendSubscriptionToBackend(subscription) {
-  return fetch('/api/save-subscription/', {
+  return fetch(`${HOST}/api/save-subscription/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

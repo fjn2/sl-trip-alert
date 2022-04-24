@@ -1,5 +1,7 @@
+const HOST = process.env.REACT_APP_BACKEND_URL
+
 export const getDepartures = (originId: string) => {
-    return fetch(`/api/sl?originSiteId=${originId}`, {
+    return fetch(`${HOST}/api/sl?originSiteId=${originId}`, {
     'headers': {
       'accept': '*/*',
       'accept-language': 'en-US',

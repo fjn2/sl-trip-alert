@@ -24,7 +24,7 @@ if (!('PushManager' in window)) {
 }
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+    navigator.serviceWorker.register('sw.js').then(function(registration) {
       // @ts-ignore
       window.swRegistration = registration
 

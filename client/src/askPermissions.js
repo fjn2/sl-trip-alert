@@ -1,5 +1,8 @@
 function askPermission() {
   return new Promise(function(resolve, reject) {
+    if (!Notification) {
+      reject(new Error('Notification object is not defined'))
+    }
     const permissionResult = Notification.requestPermission(function(result) {
       resolve(result);
     });

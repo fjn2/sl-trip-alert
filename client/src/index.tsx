@@ -16,11 +16,11 @@ ReactDOM.render(
 
 
 if (!('serviceWorker' in navigator)) {
-  alert('Service Worker isn\'t supported on this browser, disable or hide UI.')
+  console.warn('Service Worker isn\'t supported on this browser, disable or hide UI.')
 }
 
 if (!('PushManager' in window)) {
-  alert('Push isn\'t supported on this browser, disable or hide UI.')
+  console.warn('Push isn\'t supported on this browser, disable or hide UI.')
 }
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', function() {

@@ -10,12 +10,32 @@ const HOST = 'https://webcloud.sl.se'
 
 app.use(cors())
 
+const applyExtraFilters = (data, {
+  direction,
+  transportType
+} = {}) => {
+  const subSet = data.filter((item) => {
+    console.log(item)
+    return (
+      (item.transport.direction === +direction || !direction) &&
+      (item.transport.transportType === transportType || !transportType)
+    )
+  })
+  return subSet
+}
+
 app.use(
   '/api/sl', (req, res) => {
     var fetchUrl = require("fetch").fetchUrl;
     const originSiteId = req.query.originSiteId || 9248   // default id is AGA
-    fetchUrl(`${HOST}/api/v2/departures?mode=departures&origSiteId=${originSiteId}&desiredResults=3`, function(error, meta, body){
-        res.send(body.toString())
+    fetchUrl(`${HOST}/api/v2/departures?mode=departures&origSiteId=${originSiteId}&desiredResults=7`, function(error, meta, body) {
+        const data  = JSON.parse(body.toString())
+        
+        const filteredData = applyExtraFilters(data, {
+          direction: req.query.direction,
+          transportType: req.query.transportType
+        })
+        res.send(filteredData)
     });
   }
 );

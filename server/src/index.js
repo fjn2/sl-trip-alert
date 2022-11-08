@@ -1,4 +1,7 @@
 require('dotenv').config()
+
+const https = require('https');
+
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
@@ -8,6 +11,12 @@ const port = process.env.PORT || 3030
 
 const HOST = 'https://webcloud.sl.se'
 
+// There are some issues with the SSL
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
+
+
 app.use(cors())
 
 const applyExtraFilters = (data, {
@@ -15,7 +24,6 @@ const applyExtraFilters = (data, {
   transportType
 } = {}) => {
   const subSet = data.filter((item) => {
-    console.log(item)
     return (
       (item.transport.direction === +direction || !direction) &&
       (item.transport.transportType === transportType || !transportType)
@@ -28,7 +36,10 @@ app.use(
   '/api/sl', (req, res) => {
     var fetchUrl = require("fetch").fetchUrl;
     const originSiteId = req.query.originSiteId || 9248   // default id is AGA
-    fetchUrl(`${HOST}/api/v2/departures?mode=departures&origSiteId=${originSiteId}&desiredResults=7`, function(error, meta, body) {
+    const url = `${HOST}/api/v2/departures?mode=departures&origSiteId=${originSiteId}&desiredResults=7`
+    fetchUrl(url, {
+      agent: httpsAgent
+    }, function(error, meta, body) {
         const data  = JSON.parse(body.toString())
         
         const filteredData = applyExtraFilters(data, {
